@@ -8,13 +8,13 @@ Não é necessário usar termos técnicos neste momento.
 
 ## Minha leitura inicial
 
-*(Espaço reservado para o estudante preencher)*
-
-Exemplo de entradas:
-- "A classe faz muita coisa ao mesmo tempo"
-- "Tem código de e-mail misturado com o cálculo de multa"
-- "O mesmo cálculo aparece duas vezes no código"
-- "As listas de equipamentos estão fora da classe, soltas no arquivo"
+- O código parece concentrar muitas responsabilidades no mesmo lugar
+- Existe dependência de variáveis globais
+- Algumas partes parecem difíceis de testar separadamente
+- A lógica do sistema e a interface estão misturadas
+- Não está claro onde cada funcionalidade deveria ficar
+- Há repetição de algumas ideias no código
+- O sistema não parece preparado para crescer facilmente
 
 ---
 
