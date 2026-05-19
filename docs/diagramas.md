@@ -1,102 +1,128 @@
-# Diagramas de Sequência
+# Diagramas e Organização do Sistema
 
-A decomposição abaixo segue os princípios discutidos na resenha, aplicando separação de responsabilidades, redução de acoplamento e maior coesão entre os módulos.
+A estrutura implementada foi baseada na arquitetura definida anteriormente e nos princípios discutidos na resenha da Aula 3, principalmente separação de responsabilidades, redução de acoplamento e melhoria da organização do código.
 
 ---
 
-## UC01 — Registrar Empréstimo
+# Organização dos módulos
+
+## models/Equipamento
+
+Responsável por representar os equipamentos disponíveis no sistema e suas regras específicas de multa.
+
+## models/Emprestimo
+
+Armazena os dados relacionados aos empréstimos realizados pelos usuários.
+
+## services/ServicoEmprestimo
+
+Centraliza as operações principais do sistema, como registro de empréstimos, devoluções e verificação de atrasos.
+
+## services/Notificador
+
+Responsável pelo envio de avisos e mensagens do sistema.
+
+## repositories/RepositorioEmprestimo
+
+Gerencia o armazenamento temporário dos dados de empréstimos e equipamentos.
+
+## main.py
+
+Responsável por iniciar a execução principal da aplicação.
+
+---
+
+# UC01 — Registrar Empréstimo
 
 ```mermaid
 sequenceDiagram
+    actor Usuario
 
-actor Usuario
+    participant Main
+    participant ServicoEmprestimo
+    participant RepositorioEmprestimo
+    participant Notificador
 
-participant Main
-participant ServicoEmprestimo
-participant RepositorioEmprestimo
-participant Notificador
+    Usuario ->> Main: solicitar empréstimo
 
-Usuario ->> Main: solicitar empréstimo
+    Main ->> ServicoEmprestimo: registrar_emprestimo()
 
-Main ->> ServicoEmprestimo: registrar_emprestimo()
+    ServicoEmprestimo ->> RepositorioEmprestimo: buscar_equipamento()
 
-ServicoEmprestimo ->> RepositorioEmprestimo: buscar_equipamento()
+    RepositorioEmprestimo -->> ServicoEmprestimo: equipamento
 
-RepositorioEmprestimo -->> ServicoEmprestimo: equipamento
+    alt equipamento disponível
 
-alt equipamento disponível
+        ServicoEmprestimo ->> RepositorioEmprestimo: salvar_emprestimo()
 
-ServicoEmprestimo ->> RepositorioEmprestimo: salvar_emprestimo()
+        ServicoEmprestimo ->> RepositorioEmprestimo: bloquear_equipamento()
 
-ServicoEmprestimo ->> RepositorioEmprestimo: bloquear_equipamento()
+        ServicoEmprestimo ->> Notificador: enviar_confirmacao()
 
-ServicoEmprestimo ->> Notificador: enviar_confirmacao()
+        Notificador -->> Usuario: confirmação enviada
 
-Notificador -->> Usuario: mensagem enviada
+    else equipamento indisponível
 
-else equipamento indisponível
+        ServicoEmprestimo -->> Usuario: empréstimo recusado
 
-ServicoEmprestimo -->> Usuario: empréstimo negado
-
-end
-## UC02 — Registrar Devolução
-
-```mermaid
-sequenceDiagram
-
-actor Usuario
-
-participant Main
-participant ServicoEmprestimo
-participant RepositorioEmprestimo
-
-Usuario ->> Main: solicitar devolução
-
-Main ->> ServicoEmprestimo: finalizar_emprestimo()
-
-ServicoEmprestimo ->> RepositorioEmprestimo: listar_emprestimos()
-
-loop procurar empréstimo
-
-RepositorioEmprestimo -->> ServicoEmprestimo: empréstimo
-
-end
-
-ServicoEmprestimo ->> RepositorioEmprestimo: liberar_equipamento()
-
-ServicoEmprestimo -->> Usuario: devolução concluída
+    end
 ```
 
 ---
 
-## UC03 — Verificar Atrasos
+# UC02 — Registrar Devolução
 
 ```mermaid
 sequenceDiagram
+    actor Usuario
 
-actor Sistema
+    participant Main
+    participant ServicoEmprestimo
+    participant RepositorioEmprestimo
 
-participant ServicoEmprestimo
-participant RepositorioEmprestimo
-participant Notificador
+    Usuario ->> Main: solicitar devolução
 
-Sistema ->> ServicoEmprestimo: verificar_atrasos()
+    Main ->> ServicoEmprestimo: finalizar_emprestimo()
 
-ServicoEmprestimo ->> RepositorioEmprestimo: listar_emprestimos()
+    ServicoEmprestimo ->> RepositorioEmprestimo: listar_emprestimos()
 
-loop verificar empréstimos
+    loop localizar empréstimo
+        RepositorioEmprestimo -->> ServicoEmprestimo: empréstimo
+    end
 
-RepositorioEmprestimo -->> ServicoEmprestimo: empréstimo
+    ServicoEmprestimo ->> RepositorioEmprestimo: liberar_equipamento()
 
-alt empréstimo atrasado
+    ServicoEmprestimo -->> Usuario: devolução concluída
+```
 
-ServicoEmprestimo ->> ServicoEmprestimo: calcular_multa()
+---
 
-ServicoEmprestimo ->> Notificador: enviar_aviso_atraso()
+# UC03 — Verificar Atrasos
 
-Notificador -->> Sistema: aviso enviado
+```mermaid
+sequenceDiagram
+    actor Sistema
 
-end
+    participant ServicoEmprestimo
+    participant RepositorioEmprestimo
+    participant Notificador
 
-end
+    Sistema ->> ServicoEmprestimo: verificar_atrasos()
+
+    ServicoEmprestimo ->> RepositorioEmprestimo: listar_emprestimos()
+
+    loop analisar empréstimos
+
+        RepositorioEmprestimo -->> ServicoEmprestimo: empréstimo
+
+        alt empréstimo atrasado
+
+            ServicoEmprestimo ->> ServicoEmprestimo: calcular_multa()
+
+            ServicoEmprestimo ->> Notificador: enviar_aviso_atraso()
+
+            Notificador -->> Sistema: aviso enviado
+
+        end
+    end
 ```
