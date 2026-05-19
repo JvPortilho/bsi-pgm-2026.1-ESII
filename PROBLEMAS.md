@@ -20,4 +20,18 @@ Não é necessário usar termos técnicos neste momento.
 
 ## Revisão com vocabulário técnico
 
-*(Este espaço será preenchido após a Aula 4, quando os termos técnicos corretos forem aprendidos)*
+- O sistema apresentava baixa coesão, pois diferentes responsabilidades estavam concentradas no mesmo arquivo.
+
+- Existia alto acoplamento entre os componentes do sistema, dificultando manutenção e reutilização.
+
+- O código violava o princípio SRP, já que múltiplas responsabilidades estavam reunidas no mesmo módulo.
+
+- A ausência de separação em camadas dificultava evolução do projeto.
+
+- O sistema misturava regras de negócio com interação de interface.
+
+- O modelo inicial dificultava testes isolados, contrariando o requisito RNF04.
+
+- A estrutura em arquivo único dificultava modificações futuras, contrariando o requisito RNF03.
+
+- O código apresentava características de dívida técnica relacionadas à organização e escalabilidade.
