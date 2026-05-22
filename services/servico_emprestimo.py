@@ -3,16 +3,18 @@
 from datetime import date, timedelta
 
 from models.emprestimo import Emprestimo
-from repositories.repositorio_emprestimo import RepositorioEmprestimo
-from services.notificador import Notificador
 
 
 class ServicoEmprestimo:
 
-    def __init__(self):
+    def __init__(
+        self,
+        repositorio,
+        notificador
+    ):
 
-        self.repo = RepositorioEmprestimo()
-        self.notificador = Notificador()
+        self.repo = repositorio
+        self.notificador = notificador
 
     def registrar_emprestimo(
         self,
@@ -45,7 +47,9 @@ class ServicoEmprestimo:
             devolvido=False
         )
 
-        self.repo.salvar_emprestimo(emprestimo)
+        self.repo.salvar_emprestimo(
+            emprestimo
+        )
 
         self.repo.bloquear_equipamento(
             equip_id
